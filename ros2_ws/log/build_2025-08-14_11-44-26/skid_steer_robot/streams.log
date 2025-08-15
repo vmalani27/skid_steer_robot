@@ -1,0 +1,46 @@
+[0.025s] Invoking command in '/home/rovasura/ros2_ws/build/skid_steer_robot': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/rovasura/ros2_ws/build/skid_steer_robot -- -j4 -l4
+[0.116s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.266s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.299s] -- Found rclcpp: 16.0.14 (/opt/ros/humble/share/rclcpp/cmake)
+[0.358s] -- Found rosidl_generator_c: 3.1.7 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.363s] -- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.376s] -- Found rosidl_generator_cpp: 3.1.7 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.395s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.416s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.479s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[0.483s] -- Found rmw_fastrtps_cpp: 6.2.8 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[0.617s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.704s] -- Found geometry_msgs: 4.9.0 (/opt/ros/humble/share/geometry_msgs/cmake)
+[0.725s] -- Found sensor_msgs: 4.9.0 (/opt/ros/humble/share/sensor_msgs/cmake)
+[0.749s] -- Found nav_msgs: 4.9.0 (/opt/ros/humble/share/nav_msgs/cmake)
+[0.773s] -- Found tf2: 0.25.15 (/opt/ros/humble/share/tf2/cmake)
+[0.781s] -- Found tf2_ros: 0.25.15 (/opt/ros/humble/share/tf2_ros/cmake)
+[0.905s] -- Found urdf: 2.6.1 (/opt/ros/humble/share/urdf/cmake)
+[0.931s] -- Found xacro: 2.0.13 (/opt/ros/humble/share/xacro/cmake)
+[0.932s] -- Found robot_state_publisher: 3.0.3 (/opt/ros/humble/share/robot_state_publisher/cmake)
+[0.940s] -- Found eigen3_cmake_module: 0.1.1 (/opt/ros/humble/share/eigen3_cmake_module/cmake)
+[0.942s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[0.948s] -- Found controller_manager: 2.51.0 (/opt/ros/humble/share/controller_manager/cmake)
+[1.077s] -- Found diff_drive_controller: 2.48.0 (/opt/ros/humble/share/diff_drive_controller/cmake)
+[1.111s] -- Found ros_gz: 0.244.20 (/opt/ros/humble/share/ros_gz/cmake)
+[1.122s] [31mCMake Error at CMakeLists.txt:25 (find_package):
+[1.122s]   By not providing "Findament_lint_auto.cmake" in CMAKE_MODULE_PATH this
+[1.122s]   project has asked CMake to find a package configuration file provided by
+[1.122s]   "ament_lint_auto", but CMake did not find one.
+[1.123s] 
+[1.123s]   Could not find a package configuration file provided by "ament_lint_auto"
+[1.123s]   with any of the following names:
+[1.123s] 
+[1.123s]     ament_lint_autoConfig.cmake
+[1.123s]     ament_lint_auto-config.cmake
+[1.123s] 
+[1.124s]   Add the installation prefix of "ament_lint_auto" to CMAKE_PREFIX_PATH or
+[1.124s]   set "ament_lint_auto_DIR" to a directory containing one of the above files.
+[1.124s]   If "ament_lint_auto" provides a separate development package or SDK, be
+[1.124s]   sure it has been installed.
+[1.124s] 
+[1.125s] [0m
+[1.125s] -- Configuring incomplete, errors occurred!
+[1.125s] See also "/home/rovasura/ros2_ws/build/skid_steer_robot/CMakeFiles/CMakeOutput.log".
+[1.132s] gmake: *** [Makefile:226: cmake_check_build_system] Error 1
+[1.134s] Invoked command in '/home/rovasura/ros2_ws/build/skid_steer_robot' returned '2': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/rovasura/ros2_ws/build/skid_steer_robot -- -j4 -l4

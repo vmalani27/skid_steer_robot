@@ -1,0 +1,33 @@
+[0.017s] Invoking command in '/home/rovasura/ros2_ws/build/skid_steer_robot': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/rovasura/ros2_ws/build/skid_steer_robot -- -j4 -l4
+[0.086s] Invoked command in '/home/rovasura/ros2_ws/build/skid_steer_robot' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --build /home/rovasura/ros2_ws/build/skid_steer_robot -- -j4 -l4
+[0.100s] Invoking command in '/home/rovasura/ros2_ws/build/skid_steer_robot': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/rovasura/ros2_ws/build/skid_steer_robot
+[0.110s] -- Install configuration: ""
+[0.110s] -- Execute custom install script
+[0.111s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/ament_index/resource_index/package_run_dependencies/skid_steer_robot
+[0.111s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/ament_index/resource_index/parent_prefix_path/skid_steer_robot
+[0.111s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/ament_prefix_path.sh
+[0.111s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/ament_prefix_path.dsv
+[0.112s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/path.sh
+[0.112s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/path.dsv
+[0.112s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.bash
+[0.112s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.sh
+[0.112s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.zsh
+[0.112s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.dsv
+[0.112s] -- Symlinking: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/package.dsv
+[0.124s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/ament_index/resource_index/packages/skid_steer_robot
+[0.124s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/cmake/skid_steer_robotConfig.cmake
+[0.124s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/cmake/skid_steer_robotConfig-version.cmake
+[0.124s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/package.xml
+[0.124s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/minimal_gazebo.launch.py
+[0.125s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/sim.launch.py
+[0.128s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/simple_sim.launch.py
+[0.129s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/test_gazebo.launch.py
+[0.129s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/urdf_sim.launch.py
+[0.129s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//urdf/skid_steer.urdf
+[0.129s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//urdf/skid_steer.urdf.xacro
+[0.129s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//config/ros2_control.yaml
+[0.129s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//meshes/mountain.dae
+[0.129s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//worlds/world.sdf
+[0.129s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/models/skid_steer_robot//model.sdf
+[0.129s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/models/skid_steer_robot//model.config
+[0.131s] Invoked command in '/home/rovasura/ros2_ws/build/skid_steer_robot' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/humble /usr/bin/cmake --install /home/rovasura/ros2_ws/build/skid_steer_robot

@@ -1,0 +1,1 @@
+/home/rovasura/ros2_ws/build/ldlidar_component/ament_cmake_core/ldlidar_componentConfig-version.cmake

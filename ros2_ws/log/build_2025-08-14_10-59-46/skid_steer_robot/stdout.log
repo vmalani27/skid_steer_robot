@@ -1,0 +1,28 @@
+-- Install configuration: ""
+-- Execute custom install script
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/ament_index/resource_index/package_run_dependencies/skid_steer_robot
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/ament_index/resource_index/parent_prefix_path/skid_steer_robot
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/ament_prefix_path.sh
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/path.sh
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/path.dsv
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.bash
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.sh
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.zsh
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.dsv
+-- Symlinking: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/package.dsv
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/ament_index/resource_index/packages/skid_steer_robot
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/cmake/skid_steer_robotConfig.cmake
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/cmake/skid_steer_robotConfig-version.cmake
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/package.xml
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/sim.launch.py
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/simple_sim.launch.py
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/test_gazebo.launch.py
+-- Symlinking: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/urdf_sim.launch.py
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//urdf/skid_steer.urdf
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//urdf/skid_steer.urdf.xacro
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//config/ros2_control.yaml
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//meshes/mountain.dae
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//worlds/world.sdf
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/models/skid_steer_robot//model.sdf
+-- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/models/skid_steer_robot//model.config

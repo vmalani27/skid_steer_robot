@@ -1,0 +1,75 @@
+[0.021s] Invoking command in '/home/rovasura/ros2_ws/build/skid_steer_robot': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/rovasura/ros2_ws/src/skid_steer_robot -DCMAKE_BUILD_TYPE=Release -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/rovasura/ros2_ws/install/skid_steer_robot
+[0.033s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.185s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.196s] -- Found rclcpp: 16.0.14 (/opt/ros/humble/share/rclcpp/cmake)
+[0.229s] -- Found rosidl_generator_c: 3.1.7 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.233s] -- Found rosidl_adapter: 3.1.7 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.241s] -- Found rosidl_generator_cpp: 3.1.7 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.252s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.267s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.309s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[0.312s] -- Found rmw_fastrtps_cpp: 6.2.8 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[0.437s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.502s] -- Found geometry_msgs: 4.9.0 (/opt/ros/humble/share/geometry_msgs/cmake)
+[0.518s] -- Found sensor_msgs: 4.9.0 (/opt/ros/humble/share/sensor_msgs/cmake)
+[0.543s] -- Found nav_msgs: 4.9.0 (/opt/ros/humble/share/nav_msgs/cmake)
+[0.561s] -- Found tf2: 0.25.15 (/opt/ros/humble/share/tf2/cmake)
+[0.565s] -- Found tf2_ros: 0.25.15 (/opt/ros/humble/share/tf2_ros/cmake)
+[0.679s] -- Found urdf: 2.6.1 (/opt/ros/humble/share/urdf/cmake)
+[0.700s] -- Found xacro: 2.0.13 (/opt/ros/humble/share/xacro/cmake)
+[0.700s] -- Found robot_state_publisher: 3.0.3 (/opt/ros/humble/share/robot_state_publisher/cmake)
+[0.704s] -- Found eigen3_cmake_module: 0.1.1 (/opt/ros/humble/share/eigen3_cmake_module/cmake)
+[0.706s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[0.713s] -- Found controller_manager: 2.51.0 (/opt/ros/humble/share/controller_manager/cmake)
+[0.831s] -- Found diff_drive_controller: 2.48.0 (/opt/ros/humble/share/diff_drive_controller/cmake)
+[0.862s] -- Found ros_gz: 0.244.20 (/opt/ros/humble/share/ros_gz/cmake)
+[0.862s] -- Found ament_lint_auto: 0.12.14 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[0.966s] -- Added test 'flake8' to check Python code syntax and style conventions
+[0.967s] -- Added test 'lint_cmake' to check CMake code style
+[0.968s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[0.970s] -- Added test 'xmllint' to check XML markup files
+[0.973s] -- Configuring done
+[0.978s] -- Generating done
+[0.983s] -- Build files have been written to: /home/rovasura/ros2_ws/build/skid_steer_robot
+[1.001s] Invoked command in '/home/rovasura/ros2_ws/build/skid_steer_robot' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/rovasura/ros2_ws/src/skid_steer_robot -DCMAKE_BUILD_TYPE=Release -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/rovasura/ros2_ws/install/skid_steer_robot
+[1.004s] Invoking command in '/home/rovasura/ros2_ws/build/skid_steer_robot': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/rovasura/ros2_ws/build/skid_steer_robot -- -j4 -l4
+[1.062s] Invoked command in '/home/rovasura/ros2_ws/build/skid_steer_robot' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/rovasura/ros2_ws/build/skid_steer_robot -- -j4 -l4
+[1.075s] Invoking command in '/home/rovasura/ros2_ws/build/skid_steer_robot': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/rovasura/ros2_ws/build/skid_steer_robot
+[1.091s] -- Install configuration: "Release"
+[1.091s] -- Execute custom install script
+[1.091s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/ament_index/resource_index/package_run_dependencies/skid_steer_robot
+[1.091s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/ament_index/resource_index/parent_prefix_path/skid_steer_robot
+[1.091s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/ament_prefix_path.sh
+[1.091s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/ament_prefix_path.dsv
+[1.091s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/path.sh
+[1.091s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/environment/path.dsv
+[1.091s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.bash
+[1.092s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.sh
+[1.092s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.zsh
+[1.094s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/local_setup.dsv
+[1.095s] -- Symlinking: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/package.dsv
+[1.111s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/ament_index/resource_index/packages/skid_steer_robot
+[1.111s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/cmake/skid_steer_robotConfig.cmake
+[1.112s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/cmake/skid_steer_robotConfig-version.cmake
+[1.112s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/package.xml
+[1.112s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/better_robot.sh
+[1.113s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/gazebo_garden_launch.py
+[1.113s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/include_robot.sh
+[1.113s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/minimal_gazebo.launch.py
+[1.113s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/sim.launch.py
+[1.113s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/simple_gazebo.sh
+[1.113s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/simple_sim.launch.py
+[1.113s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/test_gazebo.launch.py
+[1.114s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/test_simple.sh
+[1.115s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//launch/urdf_sim.launch.py
+[1.115s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//urdf/skid_steer.urdf
+[1.115s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//urdf/skid_steer.urdf.xacro
+[1.116s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//config/ros2_control.yaml
+[1.116s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//meshes/mountain.dae
+[1.116s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//worlds/better_robot_world.sdf
+[1.116s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//worlds/include_robot_world.sdf
+[1.116s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//worlds/simple_world.sdf
+[1.117s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot//worlds/world.sdf
+[1.117s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/models/skid_steer_robot//model.sdf
+[1.117s] -- Up-to-date symlink: /home/rovasura/ros2_ws/install/skid_steer_robot/share/skid_steer_robot/models/skid_steer_robot//model.config
+[1.123s] Invoked command in '/home/rovasura/ros2_ws/build/skid_steer_robot' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/rovasura/ros2_ws/build/skid_steer_robot
