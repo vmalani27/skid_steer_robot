@@ -1,0 +1,43 @@
+# ROS2 package dependencies for differential drive robot workspace
+
+# Core ROS2 packages
+robot_state_publisher
+joint_state_publisher
+joint_state_publisher_gui
+xacro
+urdf
+tf2_ros
+tf2_geometry_msgs
+
+# Control packages
+controller_manager
+diff_drive_controller
+joint_state_broadcaster
+ros2_control
+ros2_controllers
+
+# Gazebo simulation
+gazebo_ros
+gazebo_ros_pkgs
+gazebo_ros2_control
+
+# Navigation and sensors
+sensor_msgs
+geometry_msgs
+nav_msgs
+std_msgs
+builtin_interfaces
+
+# Visualization
+rviz2
+rviz_common
+rviz_default_plugins
+
+# Build tools
+ament_cmake
+ament_python
+rosidl_default_generators
+rosidl_default_runtime
+
+# Python packages
+rclpy

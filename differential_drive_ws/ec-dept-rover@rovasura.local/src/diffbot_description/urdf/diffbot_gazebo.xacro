@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="diffbot_gazebo">
+
+    <!-- Gazebo reference for Base Link -->
+    <gazebo reference="base_link">
+        <material>Gazebo/Blue</material>
+    </gazebo>
+
+    <!-- Gazebo reference for Drive Wheels -->
+    <gazebo reference="drivewhl_l_link">
+        <material>Gazebo/DarkGray</material>
+    </gazebo>
+
+    <gazebo reference="drivewhl_r_link">
+        <material>Gazebo/DarkGray</material>
+    </gazebo>
+
+    <!-- Gazebo reference for Caster -->
+    <gazebo reference="front_caster">
+        <material>Gazebo/Blue</material>
+        <mu1>0.0</mu1>
+        <mu2>0.0</mu2>
+        <kp>1000000.0</kp>
+        <kd>10.0</kd>
+        <minDepth>0.001</minDepth>
+        <maxVel>1.0</maxVel>
+    </gazebo>
+
+    <!-- Gazebo reference for Laser -->
+    <gazebo reference="laser">
+        <material>Gazebo/Red</material>
+    </gazebo>
+
+    <!-- Differential Drive Plugin -->
+    <gazebo>
+        <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+            <ros>
+                <namespace>/diffbot</namespace>
+            </ros>
+
+            <!-- wheels -->
+            <left_joint>drivewhl_l_joint</left_joint>
+            <right_joint>drivewhl_r_joint</right_joint>
+
+            <!-- kinematics -->
+            <wheel_separation>0.287</wheel_separation>
+            <wheel_diameter>0.20</wheel_diameter>
+
+            <!-- limits -->
+            <max_wheel_torque>200</max_wheel_torque>
+            <max_wheel_acceleration>10.0</max_wheel_acceleration>
+
+            <!-- output -->
+            <publish_odom>true</publish_odom>
+            <publish_odom_tf>true</publish_odom_tf>
+            <publish_wheel_tf>false</publish_wheel_tf>
+
+            <odometry_frame>odom</odometry_frame>
+            <robot_base_frame>base_footprint</robot_base_frame>
+        </plugin>
+    </gazebo>
+
+    <!-- Laser Scanner Plugin -->
+    <gazebo reference="laser">
+        <sensor type="ray" name="head_hokuyo_sensor">
+            <pose>0 0 0 0 0 0</pose>
+            <visualize>false</visualize>
+            <update_rate>40</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>720</samples>
+                        <resolution>1</resolution>
+                        <min_angle>-1.570796</min_angle>
+                        <max_angle>1.570796</max_angle>
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.10</min>
+                    <max>30.0</max>
+                    <resolution>0.01</resolution>
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.01</stddev>
+                </noise>
+            </ray>
+            <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+                <ros>
+                    <namespace>/diffbot</namespace>
+                    <remapping>~/out:=scan</remapping>
+                </ros>
+                <output_type>sensor_msgs/LaserScan</output_type>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <!-- Ultrasonic Sensor Plugins -->
+    <xacro:macro name="ultrasonic_gazebo" params="sensor_name">
+        <gazebo reference="${sensor_name}">
+            <sensor type="ray" name="${sensor_name}_sensor">
+                <pose>0 0 0 0 0 0</pose>
+                <visualize>false</visualize>
+                <update_rate>5</update_rate>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>5</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-0.25</min_angle>
+                            <max_angle>0.25</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.02</min>
+                        <max>4.0</max>
+                        <resolution>0.01</resolution>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                </ray>
+                <plugin name="gazebo_ros_${sensor_name}_controller" filename="libgazebo_ros_laser.so">
+                    <ros>
+                        <namespace>/diffbot</namespace>
+                        <remapping>~/out:=${sensor_name}/scan</remapping>
+                    </ros>
+                    <output_type>sensor_msgs/LaserScan</output_type>
+                </plugin>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+
+    <xacro:ultrasonic_gazebo sensor_name="ultrasonic_front"/>
+    <xacro:ultrasonic_gazebo sensor_name="ultrasonic_rear"/>
+    <xacro:ultrasonic_gazebo sensor_name="ultrasonic_left"/>
+    <xacro:ultrasonic_gazebo sensor_name="ultrasonic_right"/>
+
+</robot>

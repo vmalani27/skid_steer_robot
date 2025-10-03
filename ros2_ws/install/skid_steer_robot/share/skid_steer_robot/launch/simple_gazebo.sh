@@ -1,1 +1,0 @@
-/home/rovasura/ros2_ws/src/skid_steer_robot/launch/simple_gazebo.sh

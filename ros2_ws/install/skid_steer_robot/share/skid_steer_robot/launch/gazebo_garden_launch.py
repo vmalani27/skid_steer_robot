@@ -1,1 +1,0 @@
-/home/rovasura/ros2_ws/src/skid_steer_robot/launch/gazebo_garden_launch.py

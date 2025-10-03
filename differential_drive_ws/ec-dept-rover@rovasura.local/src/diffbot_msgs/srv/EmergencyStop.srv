@@ -1,0 +1,12 @@
+# EmergencyStop.srv
+# Service for emergency stop functionality
+
+# Request
+bool stop_robot  # true to stop, false to resume
+
+---
+
+# Response
+bool success
+string message
+builtin_interfaces/Time stop_time

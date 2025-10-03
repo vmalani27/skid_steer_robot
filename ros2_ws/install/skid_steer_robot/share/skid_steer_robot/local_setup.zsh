@@ -1,1 +1,0 @@
-/home/rovasura/ros2_ws/build/skid_steer_robot/ament_cmake_environment_hooks/local_setup.zsh

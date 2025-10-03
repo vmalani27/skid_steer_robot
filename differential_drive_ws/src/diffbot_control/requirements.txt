@@ -1,0 +1,12 @@
+# Python dependencies for diffbot_control package
+# Install with: pip install -r requirements.txt
+
+# GPIO library for Raspberry Pi (install only on Raspberry Pi)
+# RPi.GPIO>=0.7.0
+
+# Note: RPi.GPIO should be installed on Raspberry Pi with:
+# sudo apt install python3-rpi.gpio
+# or
+# pip install RPi.GPIO
+
+# The motor_driver.py includes fallback mock GPIO for development/simulation
