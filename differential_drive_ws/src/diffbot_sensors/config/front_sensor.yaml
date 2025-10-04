@@ -1,0 +1,26 @@
+# Front Ultrasonic Sensor Configuration
+# HC-SR04 ultrasonic sensor on Raspberry Pi GPIO
+
+front_ultrasonic_node:
+  ros__parameters:
+    # Sensor identification
+    sensor_name: "ultrasonic_front"
+    frame_id: "ultrasonic_front"
+    
+    # GPIO pin configuration (BCM numbering)
+    trig_pin: 23    # GPIO 23 for trigger signal
+    echo_pin: 24    # GPIO 24 for echo signal
+    
+    # Sensor specifications
+    min_range: 0.02   # 2cm minimum range
+    max_range: 4.0    # 4m maximum range  
+    fov: 0.5          # ~30 degrees field of view
+    
+    # Publishing rate
+    rate: 15.0        # 15 Hz publishing frequency
+    
+    # Advanced parameters
+    timeout_ms: 20    # 20ms timeout for measurements
+    
+    # Logging level (optional)
+    # log_level: "INFO"
