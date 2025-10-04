@@ -58,19 +58,43 @@ class UltrasonicSensorNode(Node):
         
         # GPIO setup
         self.gpio_handle = None
+        
+        # Log the GPIO pin configuration
+        self.get_logger().info(f"=== GPIO PIN CONFIGURATION ===")
+        self.get_logger().info(f"Sensor: {self.sensor_name}")
+        self.get_logger().info(f"TRIG Pin (BCM): {self.trig_pin}")
+        self.get_logger().info(f"ECHO Pin (BCM): {self.echo_pin}")
+        self.get_logger().info(f"Timeout: {self.timeout_ms}ms")
+        self.get_logger().info(f"Range: {self.min_range}m - {self.max_range}m")
+        self.get_logger().info(f"================================")
+        
         if GPIO_AVAILABLE:
             try:
+                self.get_logger().info("Opening GPIO chip 0...")
                 self.gpio_handle = GPIO.gpiochip_open(0)
+                self.get_logger().info(f"Successfully opened GPIO chip, handle: {self.gpio_handle}")
+                
+                self.get_logger().info(f"Claiming TRIG pin {self.trig_pin} as output...")
                 GPIO.gpio_claim_output(self.gpio_handle, self.trig_pin)
+                self.get_logger().info(f"Successfully claimed TRIG pin {self.trig_pin}")
+                
+                self.get_logger().info(f"Claiming ECHO pin {self.echo_pin} as input...")
                 GPIO.gpio_claim_input(self.gpio_handle, self.echo_pin)
-                self.get_logger().info(f"GPIO initialized: TRIG={self.trig_pin}, ECHO={self.echo_pin}")
+                self.get_logger().info(f"Successfully claimed ECHO pin {self.echo_pin}")
+                
+                self.get_logger().info(f"✓ GPIO initialized successfully with lgpio library")
+                self.get_logger().info(f"✓ TRIG={self.trig_pin} (output), ECHO={self.echo_pin} (input)")
             except Exception as e:
-                self.get_logger().error(f"Failed to initialize GPIO: {e}")
+                self.get_logger().error(f"✗ Failed to initialize GPIO: {e}")
+                self.get_logger().error(f"✗ Error type: {type(e).__name__}")
                 self.gpio_handle = None
                 GPIO_AVAILABLE = False
+        else:
+            self.get_logger().warn("✗ lgpio library not available")
         
         if not GPIO_AVAILABLE:
-            self.get_logger().warn("Running in SIMULATION mode (no GPIO)")
+            self.get_logger().warn("⚠ Running in SIMULATION mode (no GPIO)")
+            self.get_logger().warn("⚠ Install lgpio library for hardware GPIO access")
             self.simulated_distance = 1.0  # Default simulated distance
         
         # Create publisher
@@ -143,8 +167,23 @@ class UltrasonicSensorNode(Node):
         """Publish range data"""
         self.measurement_count += 1
         
+        # Log GPIO status every 50 measurements (every 5 seconds at 10Hz)
+        if self.measurement_count % 50 == 1:
+            if GPIO_AVAILABLE and self.gpio_handle is not None:
+                self.get_logger().info(f"🔧 GPIO Status - Handle: {self.gpio_handle}, TRIG: {self.trig_pin}, ECHO: {self.echo_pin}")
+                self.get_logger().info(f"📊 Stats: {self.measurement_count} measurements, {self.timeout_count} timeouts")
+            else:
+                self.get_logger().info(f"🔧 SIMULATION Mode - {self.measurement_count} measurements generated")
+        
         # Get distance measurement
         distance = self.get_distance()
+        
+        # Log occasional detailed measurements
+        if self.measurement_count % 20 == 0:  # Every 2 seconds at 10Hz
+            if distance is not None:
+                self.get_logger().info(f"📏 Measurement #{self.measurement_count}: {distance:.3f}m ({distance*100:.1f}cm)")
+            else:
+                self.get_logger().warn(f"⚠ Measurement #{self.measurement_count}: TIMEOUT")
         
         # Create Range message
         msg = Range()
