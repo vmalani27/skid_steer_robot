@@ -5,39 +5,111 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 import time
 
-# Try to import RPi.GPIO, fall back to mock for development/simulation
+# Try to import lgpio first (better for Pi 5), then fall back to RPi.GPIO
 try:
-    import RPi.GPIO as GPIO
+    import lgpio as GPIO_LIB
+    GPIO_TYPE = "lgpio"
     GPIO_AVAILABLE = True
 except ImportError:
-    GPIO_AVAILABLE = False
-    # Mock GPIO for development/simulation
-    class MockGPIO:
-        BCM = "BCM"
-        OUT = "OUT"
+    try:
+        import RPi.GPIO as GPIO_LIB
+        GPIO_TYPE = "RPi.GPIO"
+        GPIO_AVAILABLE = True
+    except ImportError:
+        GPIO_AVAILABLE = False
+        GPIO_TYPE = "none"
+
+# Mock GPIO classes for development/simulation
+class MockGPIO:
+    BCM = "BCM"
+    OUT = "OUT"
+    
+    @staticmethod
+    def setmode(mode): pass
+    @staticmethod
+    def setup(pin, mode): pass
+    @staticmethod
+    def cleanup(): pass
+    @staticmethod
+    def PWM(pin, freq): return MockPWM()
+
+class MockPWM:
+    def __init__(self):
+        self.duty_cycle = 0.0
         
-        @staticmethod
-        def setmode(mode): pass
-        @staticmethod
-        def setup(pin, mode): pass
-        @staticmethod
-        def cleanup(): pass
-        @staticmethod
-        def PWM(pin, freq): return MockPWM()
+    def start(self, duty):
+        self.duty_cycle = duty
+        
+    def ChangeDutyCycle(self, duty):
+        self.duty_cycle = duty
+        
+    def stop(self):
+        self.duty_cycle = 0.0
+
+# Wrapper class to provide unified interface
+class GPIOWrapper:
+    def __init__(self, gpio_type):
+        self.gpio_type = gpio_type
+        self.handle = None
+        self.pwm_instances = {}
+        
+        if gpio_type == "lgpio":
+            self.handle = GPIO_LIB.gpiochip_open(0)
+        elif gpio_type == "RPi.GPIO":
+            GPIO_LIB.setmode(GPIO_LIB.BCM)
     
-    class MockPWM:
-        def __init__(self):
-            self.duty_cycle = 0.0
-            
-        def start(self, duty):
-            self.duty_cycle = duty
-            
-        def ChangeDutyCycle(self, duty):
-            self.duty_cycle = duty
-            
-        def stop(self):
-            self.duty_cycle = 0.0
+    def setup_pin(self, pin, mode):
+        if self.gpio_type == "lgpio":
+            GPIO_LIB.gpio_claim_output(self.handle, pin)
+        elif self.gpio_type == "RPi.GPIO":
+            GPIO_LIB.setup(pin, GPIO_LIB.OUT)
     
+    def create_pwm(self, pin, frequency):
+        if self.gpio_type == "lgpio":
+            return LGPIOPWMWrapper(self.handle, pin, frequency)
+        elif self.gpio_type == "RPi.GPIO":
+            return GPIO_LIB.PWM(pin, frequency)
+        else:
+            return MockPWM()
+    
+    def cleanup(self):
+        if self.gpio_type == "lgpio" and self.handle is not None:
+            GPIO_LIB.gpiochip_close(self.handle)
+        elif self.gpio_type == "RPi.GPIO":
+            GPIO_LIB.cleanup()
+
+class LGPIOPWMWrapper:
+    def __init__(self, handle, pin, frequency):
+        self.handle = handle
+        self.pin = pin
+        self.frequency = frequency
+        self.duty_cycle = 0.0
+        self.running = False
+        
+    def start(self, duty_cycle):
+        self.duty_cycle = duty_cycle
+        self.running = True
+        # For motor control, we'll use direct GPIO writes
+        # This is a simplified approach - for precise PWM you'd need threading
+        
+    def ChangeDutyCycle(self, duty_cycle):
+        self.duty_cycle = duty_cycle
+        if self.running:
+            # Simple on/off control based on duty cycle
+            if duty_cycle > 7.5:  # Forward
+                GPIO_LIB.gpio_write(self.handle, self.pin, 1)
+            elif duty_cycle < 7.5:  # Reverse  
+                GPIO_LIB.gpio_write(self.handle, self.pin, 0)
+            else:  # Stop
+                GPIO_LIB.gpio_write(self.handle, self.pin, 0)
+    
+    def stop(self):
+        self.running = False
+        if self.handle is not None:
+            GPIO_LIB.gpio_write(self.handle, self.pin, 0)
+
+# If GPIO not available, use mock
+if not GPIO_AVAILABLE:
     GPIO = MockGPIO()
 
 # === Cytron MDDRC10 Config ===
@@ -65,11 +137,12 @@ class MotorDriver(Node):
         self.max_linear_vel = self.get_parameter('max_linear_velocity').get_parameter_value().double_value
         self.max_angular_vel = self.get_parameter('max_angular_velocity').get_parameter_value().double_value
         
-        # Store GPIO availability as instance variable to avoid scoping issues
+        # Store GPIO availability and type as instance variables
         self.gpio_available = GPIO_AVAILABLE
+        self.gpio_type = GPIO_TYPE if GPIO_AVAILABLE else "mock"
         
         if self.gpio_available:
-            self.get_logger().info("Motor Driver Node started with GPIO support")
+            self.get_logger().info(f"Motor Driver Node started with {self.gpio_type} GPIO support")
         else:
             self.get_logger().warn("Motor Driver Node started in SIMULATION mode (no GPIO)")
         
@@ -83,28 +156,31 @@ class MotorDriver(Node):
         # GPIO setup
         self.pwm1 = None
         self.pwm2 = None
+        self.gpio_wrapper = None
         
         if self.gpio_available:
             try:
                 self.get_logger().info("=== GPIO INITIALIZATION ===")
-                self.get_logger().info(f"Setting GPIO mode to BCM...")
-                GPIO.setmode(GPIO.BCM)
+                self.get_logger().info(f"Using {self.gpio_type} library")
+                
+                # Create GPIO wrapper
+                self.gpio_wrapper = GPIOWrapper(self.gpio_type)
                 
                 self.get_logger().info(f"Setting up RC1 pin {self.rc1_pin} as output...")
-                GPIO.setup(self.rc1_pin, GPIO.OUT)
+                self.gpio_wrapper.setup_pin(self.rc1_pin, "OUT")
                 
                 self.get_logger().info(f"Setting up RC2 pin {self.rc2_pin} as output...")
-                GPIO.setup(self.rc2_pin, GPIO.OUT)
+                self.gpio_wrapper.setup_pin(self.rc2_pin, "OUT")
 
                 self.get_logger().info(f"Creating PWM instances...")
-                self.pwm1 = GPIO.PWM(self.rc1_pin, self.pwm_freq)
-                self.pwm2 = GPIO.PWM(self.rc2_pin, self.pwm_freq)
+                self.pwm1 = self.gpio_wrapper.create_pwm(self.rc1_pin, self.pwm_freq)
+                self.pwm2 = self.gpio_wrapper.create_pwm(self.rc2_pin, self.pwm_freq)
                 
                 self.get_logger().info(f"Starting PWM with {PW_STOP}% duty cycle...")
                 self.pwm1.start(PW_STOP)
                 self.pwm2.start(PW_STOP)
                 
-                self.get_logger().info("✓ GPIO initialized successfully with RPi.GPIO")
+                self.get_logger().info(f"✓ GPIO initialized successfully with {self.gpio_type}")
                 self.get_logger().info(f"✓ RC1={self.rc1_pin} (left), RC2={self.rc2_pin} (right)")
                 
             except Exception as e:
@@ -125,13 +201,14 @@ class MotorDriver(Node):
                 
                 # Clean up any partially initialized GPIO
                 try:
-                    if self.pwm1:
+                    if hasattr(self, 'pwm1') and self.pwm1:
                         self.pwm1.stop()
-                    if self.pwm2:
+                    if hasattr(self, 'pwm2') and self.pwm2:
                         self.pwm2.stop()
-                    GPIO.cleanup()
-                except:
-                    pass
+                    if self.gpio_wrapper:
+                        self.gpio_wrapper.cleanup()
+                except Exception as cleanup_error:
+                    self.get_logger().debug(f"GPIO cleanup warning: {cleanup_error}")
                 
                 self.get_logger().warn("⚠ Falling back to simulation mode")
                 self.gpio_available = False
@@ -215,11 +292,11 @@ class MotorDriver(Node):
         """Clean shutdown"""
         self.stop_motors()
         
-        if self.gpio_available:
+        if self.gpio_available and self.gpio_wrapper:
             try:
                 self.pwm1.stop()
                 self.pwm2.stop()
-                GPIO.cleanup()
+                self.gpio_wrapper.cleanup()
                 self.get_logger().info("GPIO cleaned up")
             except Exception as e:
                 self.get_logger().error(f"Error during GPIO cleanup: {e}")
