@@ -85,7 +85,15 @@ class MotorDriver(Node):
                 self.pwm2.start(PW_STOP)
                 self.get_logger().info("GPIO initialized successfully")
             except Exception as e:
-                self.get_logger().error(f"Failed to initialize GPIO: {e}")
+                error_msg = str(e)
+                if "Cannot determine SOC peripheral base address" in error_msg:
+                    self.get_logger().warn("Not running on Raspberry Pi hardware - GPIO access unavailable")
+                    self.get_logger().warn("This is normal when running in Docker or on non-Pi systems")
+                elif "You must setup() the GPIO channel" in error_msg:
+                    self.get_logger().error("GPIO setup sequence error - this is a code bug")
+                else:
+                    self.get_logger().error(f"GPIO initialization failed: {e}")
+                
                 self.get_logger().warn("Falling back to simulation mode")
                 self.gpio_available = False
         

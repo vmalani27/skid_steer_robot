@@ -9,7 +9,7 @@ class UltrasonicTestNode(Node):
         super().__init__('ultrasonic_test_node')
         
         # Subscribe to front ultrasonic sensor only
-        self.subscriptions = []
+        self.sensor_subscriptions = []
         sensor_names = ['ultrasonic_front']  # Only front sensor for now
         
         for sensor_name in sensor_names:
@@ -19,7 +19,7 @@ class UltrasonicTestNode(Node):
                 lambda msg, name=sensor_name: self.sensor_callback(msg, name),
                 10
             )
-            self.subscriptions.append(subscription)
+            self.sensor_subscriptions.append(subscription)
         
         # Store latest readings
         self.latest_readings = {}
