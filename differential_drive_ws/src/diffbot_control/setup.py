@@ -30,6 +30,9 @@ setup(
         'console_scripts': [
             'motor_driver = diffbot_control.motor_driver:main',
             'motor_tester = diffbot_control.motor_tester:main',
+            'teleop_keyboard = diffbot_control.teleop_keyboard:main',
+            'robot_controller = diffbot_control.robot_controller:main',
+            'robot_control_client = diffbot_control.robot_control_client:main',
         ],
     },
 )
