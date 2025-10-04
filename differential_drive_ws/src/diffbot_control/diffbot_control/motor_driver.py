@@ -172,13 +172,23 @@ class MotorDriver(Node):
                 self.get_logger().info(f"Setting up RC2 pin {self.rc2_pin} as output...")
                 self.gpio_wrapper.setup_pin(self.rc2_pin, "OUT")
 
-                self.get_logger().info(f"Creating PWM instances...")
-                self.pwm1 = self.gpio_wrapper.create_pwm(self.rc1_pin, self.pwm_freq)
-                self.pwm2 = self.gpio_wrapper.create_pwm(self.rc2_pin, self.pwm_freq)
-                
-                self.get_logger().info(f"Starting PWM with {PW_STOP}% duty cycle...")
-                self.pwm1.start(PW_STOP)
-                self.pwm2.start(PW_STOP)
+
+                    self.get_logger().info(f"Creating PWM instances...")
+                    if self.gpio_type == "RPi.GPIO":
+                        self.pwm1 = GPIO_LIB.PWM(self.rc1_pin, self.pwm_freq)
+                        self.pwm2 = GPIO_LIB.PWM(self.rc2_pin, self.pwm_freq)
+                        self.pwm1.start(PW_STOP)
+                        self.pwm2.start(PW_STOP)
+                    elif self.gpio_type == "lgpio":
+                        self.pwm1 = LGPIOPWMWrapper(self.gpio_wrapper.handle, self.rc1_pin, self.pwm_freq)
+                        self.pwm2 = LGPIOPWMWrapper(self.gpio_wrapper.handle, self.rc2_pin, self.pwm_freq)
+                        self.pwm1.start(PW_STOP)
+                        self.pwm2.start(PW_STOP)
+                    else:
+                        self.pwm1 = MockPWM()
+                        self.pwm2 = MockPWM()
+                        self.pwm1.start(PW_STOP)
+                        self.pwm2.start(PW_STOP)
                 
                 self.get_logger().info(f"✓ GPIO initialized successfully with {self.gpio_type}")
                 self.get_logger().info(f"✓ RC1={self.rc1_pin} (left), RC2={self.rc2_pin} (right)")
