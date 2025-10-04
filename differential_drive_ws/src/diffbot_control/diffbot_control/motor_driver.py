@@ -67,9 +67,9 @@ class MotorDriver(Node):
                 self.pwm1.start(PW_STOP)
                 self.pwm2.start(PW_STOP)
             elif self.gpio_type == "lgpio":
-                self.handle = LGPIO.gpiochip_open(0)
-                LGPIO.gpio_claim_output(self.handle, self.rc1_pin)
-                LGPIO.gpio_claim_output(self.handle, self.rc2_pin)
+                self.lgpio_handle = LGPIO.gpiochip_open(0)
+                LGPIO.gpio_claim_output(self.lgpio_handle, self.rc1_pin)
+                LGPIO.gpio_claim_output(self.lgpio_handle, self.rc2_pin)
                 # Start simulation of PWM with duty cycle stored
                 self.pwm1 = {"pin": self.rc1_pin, "duty": PW_STOP}
                 self.pwm2 = {"pin": self.rc2_pin, "duty": PW_STOP}
@@ -131,7 +131,7 @@ class MotorDriver(Node):
             self.pwm2.stop()
             GPIO.cleanup()
         elif self.gpio_type == "lgpio":
-            LGPIO.gpiochip_close(self.handle)
+            LGPIO.gpiochip_close(self.lgpio_handle)
         super().destroy_node()
 
 def main(args=None):
