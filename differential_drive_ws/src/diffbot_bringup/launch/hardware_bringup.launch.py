@@ -6,6 +6,7 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
 from launch_ros.actions import Node
 
 def generate_launch_description():
@@ -38,7 +39,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([
             os.path.join(pkg_diffbot_control, 'launch', 'motor_driver.launch.py')
         ]),
-        condition=lambda context: context.perform_substitution(use_hardware) == 'true'
+        condition=IfCondition(use_hardware)
     )
 
     # Static transform publishers for sensor frames

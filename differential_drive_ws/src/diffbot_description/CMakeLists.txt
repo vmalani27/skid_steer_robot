@@ -28,10 +28,12 @@ install(DIRECTORY rviz
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Install mesh files
-install(DIRECTORY meshes
-  DESTINATION share/${PROJECT_NAME}
-)
+# Install mesh files (if directory exists)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/meshes)
+  install(DIRECTORY meshes
+    DESTINATION share/${PROJECT_NAME}
+  )
+endif()
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

@@ -15,15 +15,19 @@ install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Install config files
-install(DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}
-)
+# Install config files (if directory exists)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/config)
+  install(DIRECTORY config
+    DESTINATION share/${PROJECT_NAME}
+  )
+endif()
 
-# Install world files
-install(DIRECTORY worlds
-  DESTINATION share/${PROJECT_NAME}
-)
+# Install world files (if directory exists)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/worlds)
+  install(DIRECTORY worlds
+    DESTINATION share/${PROJECT_NAME}
+  )
+endif()
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
