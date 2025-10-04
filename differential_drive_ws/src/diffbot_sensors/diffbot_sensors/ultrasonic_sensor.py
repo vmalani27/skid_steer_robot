@@ -58,6 +58,7 @@ class UltrasonicSensorNode(Node):
         
         # GPIO setup
         self.gpio_handle = None
+        self.gpio_available = GPIO_AVAILABLE  # Store as instance variable
         
         # Log the GPIO pin configuration
         self.get_logger().info(f"=== GPIO PIN CONFIGURATION ===")
@@ -68,7 +69,7 @@ class UltrasonicSensorNode(Node):
         self.get_logger().info(f"Range: {self.min_range}m - {self.max_range}m")
         self.get_logger().info(f"================================")
         
-        if GPIO_AVAILABLE:
+        if self.gpio_available:
             try:
                 self.get_logger().info("Opening GPIO chip 0...")
                 self.gpio_handle = GPIO.gpiochip_open(0)
@@ -88,11 +89,11 @@ class UltrasonicSensorNode(Node):
                 self.get_logger().error(f"✗ Failed to initialize GPIO: {e}")
                 self.get_logger().error(f"✗ Error type: {type(e).__name__}")
                 self.gpio_handle = None
-                GPIO_AVAILABLE = False
+                self.gpio_available = False
         else:
             self.get_logger().warn("✗ lgpio library not available")
         
-        if not GPIO_AVAILABLE:
+        if not self.gpio_available:
             self.get_logger().warn("⚠ Running in SIMULATION mode (no GPIO)")
             self.get_logger().warn("⚠ Install lgpio library for hardware GPIO access")
             self.simulated_distance = 1.0  # Default simulated distance
@@ -119,7 +120,7 @@ class UltrasonicSensorNode(Node):
         Get distance measurement from ultrasonic sensor using lgpio
         Returns distance in meters, or None if timeout/error
         """
-        if not GPIO_AVAILABLE or self.gpio_handle is None:
+        if not self.gpio_available or self.gpio_handle is None:
             # Simulation mode - return varying distance
             import random
             self.simulated_distance += (random.random() - 0.5) * 0.1
@@ -169,7 +170,7 @@ class UltrasonicSensorNode(Node):
         
         # Log GPIO status every 50 measurements (every 5 seconds at 10Hz)
         if self.measurement_count % 50 == 1:
-            if GPIO_AVAILABLE and self.gpio_handle is not None:
+            if self.gpio_available and self.gpio_handle is not None:
                 self.get_logger().info(f"🔧 GPIO Status - Handle: {self.gpio_handle}, TRIG: {self.trig_pin}, ECHO: {self.echo_pin}")
                 self.get_logger().info(f"📊 Stats: {self.measurement_count} measurements, {self.timeout_count} timeouts")
             else:
