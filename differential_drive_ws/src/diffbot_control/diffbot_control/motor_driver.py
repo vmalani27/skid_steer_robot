@@ -57,7 +57,10 @@ class MotorDriver(Node):
         self.max_linear_vel = self.get_parameter('max_linear_velocity').get_parameter_value().double_value
         self.max_angular_vel = self.get_parameter('max_angular_velocity').get_parameter_value().double_value
         
-        if GPIO_AVAILABLE:
+        # Store GPIO availability as instance variable to avoid scoping issues
+        self.gpio_available = GPIO_AVAILABLE
+        
+        if self.gpio_available:
             self.get_logger().info("Motor Driver Node started with GPIO support")
         else:
             self.get_logger().warn("Motor Driver Node started in SIMULATION mode (no GPIO)")
@@ -70,7 +73,7 @@ class MotorDriver(Node):
         )
 
         # GPIO setup
-        if GPIO_AVAILABLE:
+        if self.gpio_available:
             try:
                 GPIO.setmode(GPIO.BCM)
                 GPIO.setup(self.rc1_pin, GPIO.OUT)
@@ -83,8 +86,9 @@ class MotorDriver(Node):
                 self.get_logger().info("GPIO initialized successfully")
             except Exception as e:
                 self.get_logger().error(f"Failed to initialize GPIO: {e}")
-                GPIO_AVAILABLE = False
-        else:
+                self.gpio_available = False
+        
+        if not self.gpio_available:
             # Mock PWM for simulation
             self.pwm1 = GPIO.PWM(self.rc1_pin, self.pwm_freq)
             self.pwm2 = GPIO.PWM(self.rc2_pin, self.pwm_freq)
@@ -109,7 +113,7 @@ class MotorDriver(Node):
         duty_cycle = self.throttle_to_duty(throttle)
         pwm.ChangeDutyCycle(duty_cycle)
         
-        if not GPIO_AVAILABLE:
+        if not self.gpio_available:
             self.get_logger().debug(f"SIMULATION: PWM duty cycle = {duty_cycle:.2f}%")
 
     def cmd_callback(self, msg):
@@ -162,7 +166,7 @@ class MotorDriver(Node):
         """Clean shutdown"""
         self.stop_motors()
         
-        if GPIO_AVAILABLE:
+        if self.gpio_available:
             try:
                 self.pwm1.stop()
                 self.pwm2.stop()
