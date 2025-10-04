@@ -26,9 +26,17 @@ except ImportError:
         def PWM(pin, freq): return MockPWM()
     
     class MockPWM:
-        def start(self, duty): pass
-        def ChangeDutyCycle(self, duty): pass
-        def stop(self): pass
+        def __init__(self):
+            self.duty_cycle = 0.0
+            
+        def start(self, duty):
+            self.duty_cycle = duty
+            
+        def ChangeDutyCycle(self, duty):
+            self.duty_cycle = duty
+            
+        def stop(self):
+            self.duty_cycle = 0.0
     
     GPIO = MockGPIO()
 
@@ -73,34 +81,66 @@ class MotorDriver(Node):
         )
 
         # GPIO setup
+        self.pwm1 = None
+        self.pwm2 = None
+        
         if self.gpio_available:
             try:
+                self.get_logger().info("=== GPIO INITIALIZATION ===")
+                self.get_logger().info(f"Setting GPIO mode to BCM...")
                 GPIO.setmode(GPIO.BCM)
+                
+                self.get_logger().info(f"Setting up RC1 pin {self.rc1_pin} as output...")
                 GPIO.setup(self.rc1_pin, GPIO.OUT)
+                
+                self.get_logger().info(f"Setting up RC2 pin {self.rc2_pin} as output...")
                 GPIO.setup(self.rc2_pin, GPIO.OUT)
 
+                self.get_logger().info(f"Creating PWM instances...")
                 self.pwm1 = GPIO.PWM(self.rc1_pin, self.pwm_freq)
                 self.pwm2 = GPIO.PWM(self.rc2_pin, self.pwm_freq)
+                
+                self.get_logger().info(f"Starting PWM with {PW_STOP}% duty cycle...")
                 self.pwm1.start(PW_STOP)
                 self.pwm2.start(PW_STOP)
-                self.get_logger().info("GPIO initialized successfully")
+                
+                self.get_logger().info("✓ GPIO initialized successfully with RPi.GPIO")
+                self.get_logger().info(f"✓ RC1={self.rc1_pin} (left), RC2={self.rc2_pin} (right)")
+                
             except Exception as e:
                 error_msg = str(e)
-                if "Cannot determine SOC peripheral base address" in error_msg:
-                    self.get_logger().warn("Not running on Raspberry Pi hardware - GPIO access unavailable")
-                    self.get_logger().warn("This is normal when running in Docker or on non-Pi systems")
-                elif "You must setup() the GPIO channel" in error_msg:
-                    self.get_logger().error("GPIO setup sequence error - this is a code bug")
-                else:
-                    self.get_logger().error(f"GPIO initialization failed: {e}")
+                self.get_logger().error(f"✗ GPIO initialization failed: {e}")
+                self.get_logger().error(f"✗ Error type: {type(e).__name__}")
                 
-                self.get_logger().warn("Falling back to simulation mode")
+                if "Cannot determine SOC peripheral base address" in error_msg:
+                    self.get_logger().warn("✗ Not running on Raspberry Pi hardware - GPIO access unavailable")
+                    self.get_logger().warn("✗ This is normal when running in Docker or on non-Pi systems")
+                elif "You must setup() the GPIO channel" in error_msg:
+                    self.get_logger().error("✗ GPIO setup sequence error - check pin permissions")
+                elif "Permission denied" in error_msg or "access" in error_msg.lower():
+                    self.get_logger().error("✗ GPIO permission denied - try running as root or add user to gpio group")
+                    self.get_logger().error("✗ Run: sudo usermod -a -G gpio $USER")
+                else:
+                    self.get_logger().error(f"✗ Unexpected GPIO error: {e}")
+                
+                # Clean up any partially initialized GPIO
+                try:
+                    if self.pwm1:
+                        self.pwm1.stop()
+                    if self.pwm2:
+                        self.pwm2.stop()
+                    GPIO.cleanup()
+                except:
+                    pass
+                
+                self.get_logger().warn("⚠ Falling back to simulation mode")
                 self.gpio_available = False
         
         if not self.gpio_available:
-            # Mock PWM for simulation
-            self.pwm1 = GPIO.PWM(self.rc1_pin, self.pwm_freq)
-            self.pwm2 = GPIO.PWM(self.rc2_pin, self.pwm_freq)
+            self.get_logger().warn("⚠ Running in SIMULATION mode (no GPIO)")
+            # Create mock PWM objects that won't cause errors
+            self.pwm1 = MockPWM()
+            self.pwm2 = MockPWM()
             self.pwm1.start(PW_STOP)
             self.pwm2.start(PW_STOP)
 
