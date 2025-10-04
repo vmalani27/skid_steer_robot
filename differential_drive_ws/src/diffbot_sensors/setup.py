@@ -28,6 +28,8 @@ setup(
     entry_points={
         'console_scripts': [
             'ultrasonic_sensor = diffbot_sensors.ultrasonic_sensor:main',
+            'multi_ultrasonic = diffbot_sensors.multi_ultrasonic:main',
+            'ultrasonic_test = diffbot_sensors.ultrasonic_test:main',
             'sensor_aggregator = diffbot_sensors.sensor_aggregator:main',
         ],
     },

@@ -16,6 +16,10 @@ joint_state_broadcaster
 ros2_control
 ros2_controllers
 
+# Python GPIO library for Raspberry Pi
+# Install with: pip3 install lgpio
+# lgpio
+
 # Gazebo simulation
 gazebo_ros
 gazebo_ros_pkgs

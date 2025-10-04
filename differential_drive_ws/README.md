@@ -109,6 +109,21 @@ ros2 launch diffbot_control motor_driver.launch.py
 ros2 topic pub /diffbot/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.2}, angular: {z: 0.0}}"
 ```
 
+### 5. Sensor Testing (Hardware)
+```bash
+# Test individual ultrasonic sensor
+ros2 run diffbot_sensors ultrasonic_sensor
+
+# Test all sensors with monitoring
+ros2 run diffbot_sensors ultrasonic_test
+
+# Test sensors with launch file
+ros2 launch diffbot_sensors ultrasonic_sensors.launch.py
+
+# Monitor sensor topics
+ros2 topic echo /ultrasonic_front/range
+```
+
 ## Hardware Configuration
 
 ### Motor Driver (Cytron MDDRC10)
@@ -134,6 +149,60 @@ motor_driver:
     pwm_frequency: 50              # PWM frequency (Hz)
     max_linear_velocity: 1.0       # Max linear speed (m/s)
     max_angular_velocity: 1.0      # Max angular speed (rad/s)
+```
+
+### Ultrasonic Sensors (HC-SR04)
+The robot uses a single HC-SR04 ultrasonic sensor on the front for obstacle detection, integrated with `lgpio` library:
+
+**GPIO Connections:**
+- Front sensor: TRIG=23, ECHO=24
+
+**Features:**
+- Range: 2cm to 4m
+- Publishing rate: 10Hz (configurable)
+- Automatic timeout handling (20ms)
+- Mock GPIO for development/simulation
+- Easy to expand to multiple sensors later
+
+**Installation Requirements:**
+```bash
+# Install lgpio library on Raspberry Pi
+sudo apt update
+sudo apt install python3-lgpio
+# OR
+pip3 install lgpio
+```
+
+**Running Sensors:**
+```bash
+# Single front sensor (recommended)
+ros2 run diffbot_sensors ultrasonic_sensor --ros-args -p sensor_name:=ultrasonic_front -p trig_pin:=23 -p echo_pin:=24
+
+# Or use the multi-sensor node (configured for front only)
+ros2 run diffbot_sensors multi_ultrasonic
+
+# Launch sensor with aggregator
+ros2 launch diffbot_sensors ultrasonic_sensors.launch.py
+
+# Test sensor readings
+ros2 run diffbot_sensors ultrasonic_test
+```
+
+**Topics Published:**
+- `/ultrasonic_front/range` - Front sensor data
+
+**Configuration:**
+```yaml
+ultrasonic_sensor:
+  ros__parameters:
+    sensor_name: 'ultrasonic_front'
+    frame_id: 'ultrasonic_front_link'
+    trig_pin: 23                 # TRIG pin (BCM)
+    echo_pin: 24                 # ECHO pin (BCM)
+    min_range: 0.02              # Minimum range (2cm)
+    max_range: 4.0               # Maximum range (4m)  
+    publish_rate: 10.0           # Publishing frequency (Hz)
+    timeout_ms: 20               # Sensor timeout (ms)
 ```
 
 ## Robot Control
@@ -184,9 +253,10 @@ ros2 topic pub /diffbot/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.2}, angu
 - Max speed: 1.0 m/s linear, 1.0 rad/s angular
 
 ### Sensors
-- 4x Ultrasonic sensors (front, rear, left, right)
+- 1x Ultrasonic sensor (front) - HC-SR04
 - 1x Laser scanner (optional)
 - Range: 2cm - 4m (ultrasonic)
+- Expandable to multiple sensors
 
 ### Actuators
 - 2x Drive wheels (continuous rotation)
