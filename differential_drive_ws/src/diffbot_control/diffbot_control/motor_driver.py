@@ -86,6 +86,7 @@ class MotorDriver(Node):
                 self.get_logger().info("GPIO initialized successfully")
             except Exception as e:
                 self.get_logger().error(f"Failed to initialize GPIO: {e}")
+                self.get_logger().warn("Falling back to simulation mode")
                 self.gpio_available = False
         
         if not self.gpio_available:
