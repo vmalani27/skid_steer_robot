@@ -26,15 +26,16 @@ def generate_launch_description():
     )
 
     # Motor driver node
+    # Use the simplified driver which groups front/rear motors per side
     motor_driver_node = Node(
         package='diffbot_control',
-        executable='motor_driver',
-        name='motor_driver',
+        executable='simple_motor_driver',
+        name='simple_motor_driver',
         parameters=[{
             'max_linear_velocity': LaunchConfiguration('max_linear_velocity'),
             'max_angular_velocity': LaunchConfiguration('max_angular_velocity'),
-            'rc1_pin': 18,
-            'rc2_pin': 19,
+            'left_pin': 18,
+            'right_pin': 19,
             'pwm_frequency': 50
         }],
         output='screen'

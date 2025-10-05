@@ -37,7 +37,7 @@ def generate_launch_description():
     # Hardware motor driver (for real robot)
     motor_driver = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            os.path.join(pkg_diffbot_control, 'launch', 'motor_driver.launch.py')
+            os.path.join(pkg_diffbot_control, 'launch', 'motor_driver_4.launch.py')
         ]),
         condition=IfCondition(use_hardware)
     )

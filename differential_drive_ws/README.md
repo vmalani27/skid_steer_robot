@@ -449,7 +449,7 @@ ros2 launch diffbot_navigation navigation.launch.py
 ### 4. Motor Driver Only (Hardware Testing)
 ```bash
 # Test motor driver directly
-ros2 launch diffbot_control motor_driver.launch.py
+ros2 launch diffbot_control motor_driver_4.launch.py
 
 # Send test commands
 ros2 topic pub /diffbot/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.2}, angular: {z: 0.0}}"
