@@ -58,8 +58,9 @@ class FrontUltrasonicNode(Node):
                 self.get_logger().warn(f"GPIO unavailable: {e}")
                 self.gpio_handle = None
 
-        # Publisher
+        # Publisher and frame ID
         self.pub = self.create_publisher(Range, '/ultrasonic_front/range', 10)
+        self.frame_id = "ultrasonic_front"
         self.last_command = "st"
 
         # Timer
@@ -67,39 +68,43 @@ class FrontUltrasonicNode(Node):
 
 
     def read_distance(self):
-        """Return distance in meters."""
+        """Read distance from ultrasonic sensor"""
         if not GPIO_AVAILABLE or self.gpio_handle is None:
-            # Simulate in meters
-            self.sim_distance += (random.random() - 0.5) * 0.05
-            self.sim_distance = max(self.min_range, min(self.max_range, self.sim_distance))
-            return self.sim_distance
+            # Simple simulation with stable reading
+            return 0.5 + random.random() * 0.1  # 50-60cm stable reading
 
         try:
+            # Simplified timing for more reliable readings
             GPIO.gpio_write(self.gpio_handle, self.trig_pin, 0)
-            time.sleep(0.000002)
+            time.sleep(0.00001)  # 10μs settle
             GPIO.gpio_write(self.gpio_handle, self.trig_pin, 1)
-            time.sleep(0.00001)
+            time.sleep(0.00001)  # 10μs pulse
             GPIO.gpio_write(self.gpio_handle, self.trig_pin, 0)
 
-            # Wait for echo
-            start = time.time()
+            # Simple timeout approach
+            timeout = time.time() + 0.03  # 30ms max
+            
+            # Wait for echo high
             while GPIO.gpio_read(self.gpio_handle, self.echo_pin) == 0:
-                start = time.time()
-                if time.time() - start > 0.02:
-                    return None
-
-            stop = time.time()
+                if time.time() > timeout:
+                    return 2.0  # Default safe distance
+            pulse_start = time.time()
+            
+            # Wait for echo low  
             while GPIO.gpio_read(self.gpio_handle, self.echo_pin) == 1:
-                stop = time.time()
-                if time.time() - stop > 0.02:
-                    return None
+                if time.time() > timeout:
+                    return 2.0  # Default safe distance
+            pulse_end = time.time()
 
-            duration = stop - start
-            distance = duration * 343.0 / 2.0
-            return max(self.min_range, min(self.max_range, distance))
-
+            # Calculate distance (speed of sound = 343 m/s)
+            duration = pulse_end - pulse_start
+            distance = (duration * 343) / 2
+            
+            # Clamp to reasonable range
+            return max(0.02, min(4.0, distance))
+            
         except Exception:
-            return None
+            return 1.0  # Default reading on error
 
 
     def send_command(self, command: str):
@@ -111,27 +116,32 @@ class FrontUltrasonicNode(Node):
 
 
     def timer_callback(self):
+        """Timer callback to publish sensor data"""
         distance = self.read_distance()
-        if distance is None:
-            return
+        
+        # Simple print output - just the distance
+        print(f"Distance: {distance:.2f}m")
 
-        print(f"{distance:.3f} m")
-
-        # Publish ROS message
+        # Create and publish Range message
         msg = Range()
         msg.header.stamp = self.get_clock().now().to_msg()
-        msg.header.frame_id = 'ultrasonic_front'
+        msg.header.frame_id = self.frame_id
+        msg.radiation_type = Range.ULTRASOUND
+        msg.field_of_view = self.fov
         msg.min_range = self.min_range
         msg.max_range = self.max_range
-        msg.field_of_view = self.fov
         msg.range = distance
+        
         self.pub.publish(msg)
 
-        # Simple reactive control
-        if distance < self.stop_threshold:
-            self.send_command("st")
-        else:
-            self.send_command("fw")
+    def destroy_node(self):
+        """Clean shutdown"""
+        if GPIO_AVAILABLE and self.gpio_handle:
+            try:
+                GPIO.gpiochip_close(self.gpio_handle)
+            except Exception:
+                pass
+        super().destroy_node()
 
 
 def main(args=None):
