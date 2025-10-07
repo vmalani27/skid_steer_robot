@@ -23,10 +23,10 @@ class FrontUltrasonicNode(Node):
         self.declare_parameter('min_range', 0.02)
         self.declare_parameter('max_range', 4.0)
         self.declare_parameter('fov', 0.5)
-        self.declare_parameter('rate', 15.0)
+        self.declare_parameter('rate', 1.0)  # Changed to 1Hz (1 second interval)
         self.declare_parameter('serial_port', '/dev/ttyUSB0')
         self.declare_parameter('baud', 9600)
-        self.declare_parameter('stop_threshold', 0.15)
+        self.declare_parameter('stop_threshold', 2.0)  # Changed to 2.0 meters
 
         # Fetch parameters
         p = self.get_parameter
@@ -145,11 +145,13 @@ class FrontUltrasonicNode(Node):
         msg.range = distance
         self.pub.publish(msg)
 
-        # Forward/backward logic
-        if distance < self.stop_threshold:
-            self.send_command("st")  # stop if obstacle too close
-        else:
-            self.send_command("fw")  # move forward otherwise
+        # Obstacle avoidance logic
+        if distance < self.stop_threshold:  # Less than 2m
+            self.send_command("bw")  # Move backward
+            print(f"OBSTACLE DETECTED at {distance:.2f}m - Moving backward")
+        else:  # Distance >= 2m
+            self.send_command("st")  # Stop when safe distance reached
+            print(f"Safe distance {distance:.2f}m - Stopping")
 
     def destroy_node(self):
         if GPIO_AVAILABLE and self.gpio_handle:
