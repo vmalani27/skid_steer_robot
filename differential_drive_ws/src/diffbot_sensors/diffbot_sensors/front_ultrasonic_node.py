@@ -70,41 +70,50 @@ class FrontUltrasonicNode(Node):
         self.timer = self.create_timer(1.0 / self.rate, self.timer_callback)
 
     def read_distance(self):
-        """Read distance from HC-SR04"""
+        """Read distance from ultrasonic sensor with debug for pulse duration"""
         if not GPIO_AVAILABLE or self.gpio_handle is None:
             # Simulation mode
-            self.sim_distance += (random.random() - 0.5) * 0.05
-            self.sim_distance = max(self.min_range, min(self.max_range, self.sim_distance))
-            return self.sim_distance
+            sim_dist = 0.5 + random.random() * 0.1
+            print(f"[SIM] Pulse duration: N/A, Distance: {sim_dist:.3f} m")
+            return sim_dist
 
         try:
             # Trigger pulse
             GPIO.gpio_write(self.gpio_handle, self.trig_pin, 0)
-            time.sleep(0.000002)
+            time.sleep(0.00001)  # 10 μs settle
             GPIO.gpio_write(self.gpio_handle, self.trig_pin, 1)
-            time.sleep(0.00001)
+            time.sleep(0.00001)  # 10 μs pulse
             GPIO.gpio_write(self.gpio_handle, self.trig_pin, 0)
 
-            # Wait for echo start
-            timeout = time.time() + 0.03
+            timeout = time.time() + 0.03  # 30ms max
+
+            # Wait for echo HIGH
             while GPIO.gpio_read(self.gpio_handle, self.echo_pin) == 0:
                 if time.time() > timeout:
+                    print("Echo never went HIGH")
                     return self.max_range
             pulse_start = time.time()
 
-            # Wait for echo end
+            # Wait for echo LOW
             while GPIO.gpio_read(self.gpio_handle, self.echo_pin) == 1:
                 if time.time() > timeout:
+                    print("Echo never went LOW")
                     return self.max_range
             pulse_end = time.time()
 
-            # Calculate distance (meters)
+            # Calculate duration and distance
             duration = pulse_end - pulse_start
-            distance = (duration * 343.0) / 2
-            return max(self.min_range, min(self.max_range, distance))
+            distance = (duration * 343) / 2
+            distance = max(self.min_range, min(self.max_range, distance))
 
-        except Exception:
-            return self.sim_distance  # fallback
+            # Debug print
+            print(f"[HW] Pulse duration: {duration*1000:.3f} ms, Distance: {distance:.3f} m")
+
+            return distance
+
+        except Exception as e:
+            print(f"Error reading sensor: {e}")
+            return self.max_range
 
     def send_command(self, command: str):
         """Send serial command to Arduino only if changed"""
