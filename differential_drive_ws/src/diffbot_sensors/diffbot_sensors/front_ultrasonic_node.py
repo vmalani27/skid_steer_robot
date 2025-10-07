@@ -78,36 +78,44 @@ class FrontUltrasonicNode(Node):
             return sim_dist
 
         try:
-            # Trigger pulse
+            # Trigger pulse - ensure clean trigger
             GPIO.gpio_write(self.gpio_handle, self.trig_pin, 0)
-            time.sleep(0.00001)  # 10 μs settle
+            time.sleep(0.000002)  # 2 μs settle
             GPIO.gpio_write(self.gpio_handle, self.trig_pin, 1)
-            time.sleep(0.00001)  # 10 μs pulse
+            time.sleep(0.000010)  # 10 μs pulse (HC-SR04 spec)
             GPIO.gpio_write(self.gpio_handle, self.trig_pin, 0)
 
-            timeout = time.time() + 0.03  # 30ms max
+            # Longer timeout for far objects (up to 4m = ~23ms round trip)
+            timeout = time.time() + 0.025  # 25ms max
 
-            # Wait for echo HIGH
+            # Wait for echo HIGH with timeout
+            start_wait = time.time()
             while GPIO.gpio_read(self.gpio_handle, self.echo_pin) == 0:
                 if time.time() > timeout:
-                    print("Echo never went HIGH")
+                    print("Echo never went HIGH - sensor may be disconnected")
                     return self.max_range
             pulse_start = time.time()
 
-            # Wait for echo LOW
+            # Wait for echo LOW with timeout  
             while GPIO.gpio_read(self.gpio_handle, self.echo_pin) == 1:
                 if time.time() > timeout:
-                    print("Echo never went LOW")
+                    print("Echo stuck HIGH - possible sensor issue")
                     return self.max_range
             pulse_end = time.time()
 
             # Calculate duration and distance
             duration = pulse_end - pulse_start
-            distance = (duration * 343) / 2
+            # Speed of sound = 343 m/s, but we need round trip distance
+            # Distance = (time * speed) / 2
+            # Convert to cm for easier debugging: distance_cm = (duration * 34300) / 2
+            distance = (duration * 343.0) / 2.0
+            
+            # Clamp to sensor range
             distance = max(self.min_range, min(self.max_range, distance))
 
-            # Debug print
-            print(f"[HW] Pulse duration: {duration*1000:.3f} ms, Distance: {distance:.3f} m")
+            # Debug print with both meters and cm
+            distance_cm = distance * 100
+            print(f"[HW] Pulse duration: {duration*1000000:.1f} μs, Distance: {distance:.3f} m ({distance_cm:.1f} cm)")
 
             return distance
 
