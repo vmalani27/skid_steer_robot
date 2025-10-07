@@ -2,14 +2,9 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Range
-import time, random, serial
-
-try:
-    import lgpio as GPIO
-    GPIO_AVAILABLE = True
-except ImportError:
-    GPIO_AVAILABLE = False
-
+import time
+import pigpio
+import serial
 
 class FrontUltrasonicNode(Node):
     def __init__(self):
@@ -24,9 +19,8 @@ class FrontUltrasonicNode(Node):
         self.declare_parameter('rate', 15.0)
         self.declare_parameter('serial_port', '/dev/ttyUSB0')
         self.declare_parameter('baud', 9600)
-        self.declare_parameter('stop_threshold', 0.15)
+        self.declare_parameter('stop_threshold', 0.15)  # meters
 
-        # Fetch params
         p = self.get_parameter
         self.trig_pin = p('trig_pin').value
         self.echo_pin = p('echo_pin').value
@@ -46,19 +40,17 @@ class FrontUltrasonicNode(Node):
             self.get_logger().error(f"Serial init failed: {e}")
             self.ser = None
 
-        # GPIO setup
-        self.gpio_handle = None
-        self.sim_distance = 1.0
-        if GPIO_AVAILABLE:
-            try:
-                self.gpio_handle = GPIO.gpiochip_open(0)
-                GPIO.gpio_claim_output(self.gpio_handle, self.trig_pin)
-                GPIO.gpio_claim_input(self.gpio_handle, self.echo_pin)
-            except Exception as e:
-                self.get_logger().warn(f"GPIO unavailable: {e}")
-                self.gpio_handle = None
+        # pigpio setup
+        self.pi = pigpio.pi()
+        if not self.pi.connected:
+            self.get_logger().error("Cannot connect to pigpio daemon")
+            raise RuntimeError("pigpio daemon not running")
 
-        # Publisher and frame ID
+        self.pi.set_mode(self.trig_pin, pigpio.OUTPUT)
+        self.pi.set_mode(self.echo_pin, pigpio.INPUT)
+        self.pi.write(self.trig_pin, 0)
+
+        # Publisher
         self.pub = self.create_publisher(Range, '/ultrasonic_front/range', 10)
         self.frame_id = "ultrasonic_front"
         self.last_command = "st"
@@ -66,63 +58,41 @@ class FrontUltrasonicNode(Node):
         # Timer
         self.timer = self.create_timer(1.0 / self.rate, self.timer_callback)
 
-
     def read_distance(self):
-        """Read distance from ultrasonic sensor"""
-        if not GPIO_AVAILABLE or self.gpio_handle is None:
-            # Simple simulation with stable reading
-            return 0.5 + random.random() * 0.1  # 50-60cm stable reading
+        """Accurate HC-SR04 measurement using pigpio"""
+        # Trigger a 10μs pulse
+        self.pi.gpio_trigger(self.trig_pin, 10, 1)
+        start = time.time()
+        timeout = start + 0.03  # 30ms timeout
 
-        try:
-            # Simplified timing for more reliable readings
-            GPIO.gpio_write(self.gpio_handle, self.trig_pin, 0)
-            time.sleep(0.00001)  # 10μs settle
-            GPIO.gpio_write(self.gpio_handle, self.trig_pin, 1)
-            time.sleep(0.00001)  # 10μs pulse
-            GPIO.gpio_write(self.gpio_handle, self.trig_pin, 0)
+        # Wait for echo high
+        while self.pi.read(self.echo_pin) == 0:
+            if time.time() > timeout:
+                return self.max_range
+        pulse_start = time.time()
 
-            # Simple timeout approach
-            timeout = time.time() + 0.03  # 30ms max
-            
-            # Wait for echo high
-            while GPIO.gpio_read(self.gpio_handle, self.echo_pin) == 0:
-                if time.time() > timeout:
-                    return 2.0  # Default safe distance
-            pulse_start = time.time()
-            
-            # Wait for echo low  
-            while GPIO.gpio_read(self.gpio_handle, self.echo_pin) == 1:
-                if time.time() > timeout:
-                    return 2.0  # Default safe distance
-            pulse_end = time.time()
+        # Wait for echo low
+        while self.pi.read(self.echo_pin) == 1:
+            if time.time() > timeout:
+                return self.max_range
+        pulse_end = time.time()
 
-            # Calculate distance (speed of sound = 343 m/s)
-            duration = pulse_end - pulse_start
-            distance = (duration * 343) / 2
-            
-            # Clamp to reasonable range
-            return max(0.02, min(4.0, distance))
-            
-        except Exception:
-            return 1.0  # Default reading on error
-
+        duration = pulse_end - pulse_start
+        distance = (duration * 343.0) / 2.0  # in meters
+        return max(self.min_range, min(self.max_range, distance))
 
     def send_command(self, command: str):
-        """Send a command to Arduino only if it changed."""
+        """Send a command to Arduino only if changed"""
         if self.ser and command != self.last_command:
             self.ser.write((command + '\n').encode())
             self.last_command = command
-            self.get_logger().info(f"Sent: {command}")
-
+            self.get_logger().info(f"Sent command: {command}")
 
     def timer_callback(self):
-        """Timer callback to publish sensor data"""
         distance = self.read_distance()
-        
-        # Simple print output - just the distance
-        print(f"Distance: {distance:.2f}m")
+        print(f"Distance: {distance:.2f} m")
 
-        # Create and publish Range message
+        # Publish ROS Range message
         msg = Range()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = self.frame_id
@@ -131,16 +101,19 @@ class FrontUltrasonicNode(Node):
         msg.min_range = self.min_range
         msg.max_range = self.max_range
         msg.range = distance
-        
         self.pub.publish(msg)
 
+        # Simple obstacle avoidance: stop if too close
+        if distance < self.stop_threshold:
+            self.send_command("st")   # stop
+        else:
+            self.send_command("rt")   # move "right" (previously forward)
+
     def destroy_node(self):
-        """Clean shutdown"""
-        if GPIO_AVAILABLE and self.gpio_handle:
-            try:
-                GPIO.gpiochip_close(self.gpio_handle)
-            except Exception:
-                pass
+        if self.ser:
+            self.ser.close()
+        if self.pi:
+            self.pi.stop()
         super().destroy_node()
 
 
@@ -152,10 +125,6 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        if node.ser:
-            node.ser.close()
-        if node.gpio_handle:
-            GPIO.gpiochip_close(node.gpio_handle)
         node.destroy_node()
         rclpy.shutdown()
 
